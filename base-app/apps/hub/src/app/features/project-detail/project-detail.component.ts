@@ -93,7 +93,7 @@ import {CumulativeCostDeltaChartComponent} from "../../ui/cumulative-cost-delta-
 
       <section class="mb-6">
         <mat-card class="p-4">
-Fall          @if (store.changeOrders().length > 0) {
+          @if (store.changeOrders().length > 0) {
             <app-cumulative-cost-delta-chart
               [changeOrders]="store.changeOrders()"
             />

@@ -3,6 +3,9 @@
 Solution for `frontend-mid.md`: a cumulative cost-delta-by-month chart on the project detail page,
 with an "All" / "Approved" status filter that recomputes client-side.
 
+**Time spent:** started 10:30am, finished at midday, 90 minutes, excluding the time taken to write
+this `SOLUTION.md` and set up.
+
 ## Design
 
 - **Data fetch stays as-is.** `ProjectDetailStore.load()` already fetches everything the page needs
@@ -62,6 +65,10 @@ with an "All" / "Approved" status filter that recomputes client-side.
   silently with zero rows/entries.
 - If a third chart with the same data-in/Highcharts-options-out shape appears, extract a shared line
   chart component.
+
+## Commit history
+
+The zip includes `.git`, so the full commit history should be there, happy to also share the GitHub repo link
 
 ## AI/tooling used
 

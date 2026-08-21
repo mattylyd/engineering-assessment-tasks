@@ -15,15 +15,12 @@ import type {
   Milestone,
   ProjectDetail,
 } from '@pch/domain';
+import type {
+  ChangeOrderStatusFilter,
+  CumulativeCostDeltaPoint,
+} from '../ui/cumulative-cost-delta-chart.component';
 
 type Status = 'idle' | 'loading' | 'loaded' | 'error';
-
-export type ChangeOrderStatusFilter = 'all' | 'approved';
-
-export interface CumulativeCostDeltaPoint {
-  month: string;
-  cumulativeDelta: number;
-}
 
 interface ProjectDetailState {
   project: ProjectDetail | null;

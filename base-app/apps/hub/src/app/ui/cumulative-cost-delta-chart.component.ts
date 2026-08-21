@@ -8,10 +8,13 @@ import {
 import type * as Highcharts from 'highcharts';
 import { HighchartsChartComponent } from 'highcharts-angular';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import type {
-  ChangeOrderStatusFilter,
-  CumulativeCostDeltaPoint,
-} from '../data-access/project-detail.store';
+
+export type ChangeOrderStatusFilter = 'all' | 'approved';
+
+export interface CumulativeCostDeltaPoint {
+  month: string;
+  cumulativeDelta: number;
+}
 
 @Component({
   selector: 'app-cumulative-cost-delta-chart',

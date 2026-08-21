@@ -10,6 +10,7 @@ import {
 import { ApiClient } from '@pch/api-client';
 import type {
   BenchmarkComparison,
+  ChangeOrder,
   CostSnapshot,
   Milestone,
   ProjectDetail,
@@ -22,6 +23,7 @@ interface ProjectDetailState {
   costTrend: CostSnapshot[];
   milestones: Milestone[];
   benchmarks: BenchmarkComparison[];
+  changeOrders: ChangeOrder[];
   status: Status;
   error: string | null;
 }
@@ -31,6 +33,7 @@ const initialState: ProjectDetailState = {
   costTrend: [],
   milestones: [],
   benchmarks: [],
+  changeOrders: [],
   status: 'idle',
   error: null,
 };
@@ -50,6 +53,7 @@ export const ProjectDetailStore = signalStore(
         costTrend: api.getCostTrend(projectId),
         milestones: api.listMilestones(projectId),
         benchmarks: api.getProjectBenchmarks(projectId),
+        changeOrders: api.listChangeOrders(projectId),
       }).subscribe({
         next: (result) => patchState(store, { ...result, status: 'loaded' }),
         error: (err) =>

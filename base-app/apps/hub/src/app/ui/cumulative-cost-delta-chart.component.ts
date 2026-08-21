@@ -3,14 +3,13 @@ import {
   Component,
   computed,
   input,
-  signal,
+  output,
 } from '@angular/core';
 import type * as Highcharts from 'highcharts';
 import { HighchartsChartComponent } from 'highcharts-angular';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import type { ChangeOrder } from '@pch/domain';
-
-type StatusFilter = 'all' | 'approved';
+import type { ChangeOrderStatusFilter } from '../data-access/project-detail.store';
 
 @Component({
   selector: 'app-cumulative-cost-delta-chart',
@@ -21,12 +20,12 @@ type StatusFilter = 'all' | 'approved';
     <mat-button-toggle-group
       class="mb-3"
       [value]="statusFilter()"
-      (change)="statusFilter.set($event.value)"
+      (change)="statusFilterChange.emit($event.value)"
     >
       <mat-button-toggle value="all">All</mat-button-toggle>
       <mat-button-toggle value="approved">Approved</mat-button-toggle>
     </mat-button-toggle-group>
-    @if (filteredChangeOrders().length > 0) {
+    @if (changeOrders().length > 0) {
       <highcharts-chart
         [options]="options()"
         style="width: 100%; height: 320px; display: block;"
@@ -41,22 +40,14 @@ type StatusFilter = 'all' | 'approved';
 })
 export class CumulativeCostDeltaChartComponent {
   readonly changeOrders = input.required<ChangeOrder[]>();
-
-  protected readonly statusFilter = signal<StatusFilter>('all');
-
-  protected readonly filteredChangeOrders = computed(() => {
-    const filter = this.statusFilter();
-    return this.changeOrders().filter(
-      (changeOrder) => filter === 'all' || changeOrder.status === 'approved'
-    );
-  });
+  readonly statusFilter = input.required<ChangeOrderStatusFilter>();
+  readonly statusFilterChange = output<ChangeOrderStatusFilter>();
 
   protected readonly options = computed<Highcharts.Options>(() => {
     const filter = this.statusFilter();
-    const filtered = this.filteredChangeOrders();
 
     const deltaByMonth = new Map<string, number>();
-    for (const changeOrder of filtered) {
+    for (const changeOrder of this.changeOrders()) {
       const month = changeOrder.raisedDate.slice(0, 7);
       deltaByMonth.set(
         month,

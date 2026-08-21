@@ -95,7 +95,9 @@ import {CumulativeCostDeltaChartComponent} from "../../ui/cumulative-cost-delta-
         <mat-card class="p-4">
           @if (store.changeOrders().length > 0) {
             <app-cumulative-cost-delta-chart
-              [changeOrders]="store.changeOrders()"
+              [changeOrders]="store.filteredChangeOrders()"
+              [statusFilter]="store.changeOrderStatusFilter()"
+              (statusFilterChange)="store.setChangeOrderStatusFilter($event)"
             />
           } @else {
             <p class="text-gray-500" data-testid="change-orders-empty">

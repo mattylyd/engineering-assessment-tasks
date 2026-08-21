@@ -18,12 +18,15 @@ import type {
 
 type Status = 'idle' | 'loading' | 'loaded' | 'error';
 
+export type ChangeOrderStatusFilter = 'all' | 'approved';
+
 interface ProjectDetailState {
   project: ProjectDetail | null;
   costTrend: CostSnapshot[];
   milestones: Milestone[];
   benchmarks: BenchmarkComparison[];
   changeOrders: ChangeOrder[];
+  changeOrderStatusFilter: ChangeOrderStatusFilter;
   status: Status;
   error: string | null;
 }
@@ -34,6 +37,7 @@ const initialState: ProjectDetailState = {
   milestones: [],
   benchmarks: [],
   changeOrders: [],
+  changeOrderStatusFilter: 'all',
   status: 'idle',
   error: null,
 };
@@ -44,6 +48,14 @@ export const ProjectDetailStore = signalStore(
   withComputed((store) => ({
     isLoading: computed(() => store.status() === 'loading'),
     hasError: computed(() => store.status() === 'error'),
+    filteredChangeOrders: computed(() => {
+      const filter = store.changeOrderStatusFilter();
+      return store
+        .changeOrders()
+        .filter(
+          (changeOrder) => filter === 'all' || changeOrder.status === 'approved'
+        );
+    }),
   })),
   withMethods((store, api = inject(ApiClient)) => ({
     load(projectId: string): void {
@@ -62,6 +74,9 @@ export const ProjectDetailStore = signalStore(
             error: err?.message ?? 'Failed to load project',
           }),
       });
+    },
+    setChangeOrderStatusFilter(filter: ChangeOrderStatusFilter): void {
+      patchState(store, { changeOrderStatusFilter: filter });
     },
   }))
 );

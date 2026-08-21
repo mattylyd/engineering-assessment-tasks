@@ -93,7 +93,9 @@ import {CumulativeCostDeltaChartComponent} from "../../ui/cumulative-cost-delta-
 
       <section class="mb-6">
         <mat-card class="p-4">
-          <app-cumulative-cost-delta-chart/>
+          <app-cumulative-cost-delta-chart
+            [changeOrders]="store.changeOrders()"
+          />
         </mat-card>
       </section>
 

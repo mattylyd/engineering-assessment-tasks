@@ -8,8 +8,10 @@ import {
 import type * as Highcharts from 'highcharts';
 import { HighchartsChartComponent } from 'highcharts-angular';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import type { ChangeOrder } from '@pch/domain';
-import type { ChangeOrderStatusFilter } from '../data-access/project-detail.store';
+import type {
+  ChangeOrderStatusFilter,
+  CumulativeCostDeltaPoint,
+} from '../data-access/project-detail.store';
 
 @Component({
   selector: 'app-cumulative-cost-delta-chart',
@@ -25,7 +27,7 @@ import type { ChangeOrderStatusFilter } from '../data-access/project-detail.stor
       <mat-button-toggle value="all">All</mat-button-toggle>
       <mat-button-toggle value="approved">Approved</mat-button-toggle>
     </mat-button-toggle-group>
-    @if (changeOrders().length > 0) {
+    @if (data().length > 0) {
       <highcharts-chart
         [options]="options()"
         style="width: 100%; height: 320px; display: block;"
@@ -39,39 +41,25 @@ import type { ChangeOrderStatusFilter } from '../data-access/project-detail.stor
   `,
 })
 export class CumulativeCostDeltaChartComponent {
-  readonly changeOrders = input.required<ChangeOrder[]>();
+  readonly data = input.required<CumulativeCostDeltaPoint[]>();
   readonly statusFilter = input.required<ChangeOrderStatusFilter>();
   readonly statusFilterChange = output<ChangeOrderStatusFilter>();
 
   protected readonly options = computed<Highcharts.Options>(() => {
+    const points = this.data();
     const filter = this.statusFilter();
-
-    const deltaByMonth = new Map<string, number>();
-    for (const changeOrder of this.changeOrders()) {
-      const month = changeOrder.raisedDate.slice(0, 7);
-      deltaByMonth.set(
-        month,
-        (deltaByMonth.get(month) ?? 0) + changeOrder.costDelta
-      );
-    }
-
-    const months = [...deltaByMonth.keys()].sort();
-    let cumulative = 0;
-    const data = months.map(
-      (month) => (cumulative += deltaByMonth.get(month) ?? 0)
-    );
 
     return {
       chart: { type: 'line' },
       title: { text: 'Cumulative cost delta by month' },
-      xAxis: { categories: months },
+      xAxis: { categories: points.map((point) => point.month) },
       yAxis: { title: { text: 'Cumulative cost delta' } },
       credits: { enabled: false },
       series: [
         {
           type: 'line',
           name: filter === 'all' ? 'All change orders' : 'Approved only',
-          data,
+          data: points.map((point) => point.cumulativeDelta),
         },
       ],
     };

@@ -20,6 +20,11 @@ type Status = 'idle' | 'loading' | 'loaded' | 'error';
 
 export type ChangeOrderStatusFilter = 'all' | 'approved';
 
+export interface CumulativeCostDeltaPoint {
+  month: string;
+  cumulativeDelta: number;
+}
+
 interface ProjectDetailState {
   project: ProjectDetail | null;
   costTrend: CostSnapshot[];
@@ -55,6 +60,25 @@ export const ProjectDetailStore = signalStore(
         .filter(
           (changeOrder) => filter === 'all' || changeOrder.status === 'approved'
         );
+    }),
+  })),
+  withComputed((store) => ({
+    cumulativeCostDeltaByMonth: computed<CumulativeCostDeltaPoint[]>(() => {
+      const deltaByMonth = new Map<string, number>();
+      for (const changeOrder of store.filteredChangeOrders()) {
+        const month = changeOrder.raisedDate.slice(0, 7);
+        deltaByMonth.set(
+          month,
+          (deltaByMonth.get(month) ?? 0) + changeOrder.costDelta
+        );
+      }
+
+      const months = [...deltaByMonth.keys()].sort();
+      let cumulativeDelta = 0;
+      return months.map((month) => {
+        cumulativeDelta += deltaByMonth.get(month) ?? 0;
+        return { month, cumulativeDelta };
+      });
     }),
   })),
   withMethods((store, api = inject(ApiClient)) => ({

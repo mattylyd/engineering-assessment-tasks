@@ -14,7 +14,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
 import { ProjectDetailStore } from '../../data-access/project-detail.store';
 import { CostTrendChartComponent } from '../../ui/cost-trend-chart.component';
-import {CumulativeCostDeltaChartComponent} from "../../ui/cumulative-cost-delta-chart.component";
+import { CumulativeCostDeltaChartComponent } from '../../ui/cumulative-cost-delta-chart.component';
 
 @Component({
   selector: 'app-project-detail',
@@ -95,7 +95,7 @@ import {CumulativeCostDeltaChartComponent} from "../../ui/cumulative-cost-delta-
         <mat-card class="p-4">
           @if (store.changeOrders().length > 0) {
             <app-cumulative-cost-delta-chart
-              [data]="store.cumulativeCostDeltaByMonth()"
+              [points]="store.cumulativeCostDeltaByMonth()"
               [statusFilter]="store.changeOrderStatusFilter()"
               (statusFilterChange)="store.setChangeOrderStatusFilter($event)"
             />

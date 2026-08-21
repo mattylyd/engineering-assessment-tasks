@@ -26,10 +26,17 @@ type StatusFilter = 'all' | 'approved';
       <mat-button-toggle value="all">All</mat-button-toggle>
       <mat-button-toggle value="approved">Approved</mat-button-toggle>
     </mat-button-toggle-group>
-    <highcharts-chart
-      [options]="options()"
-      style="width: 100%; height: 320px; display: block;"
-    ></highcharts-chart>
+    @if (filteredChangeOrders().length > 0) {
+      <highcharts-chart
+        [options]="options()"
+        style="width: 100%; height: 320px; display: block;"
+      ></highcharts-chart>
+    } @else {
+      <p class="text-gray-500" data-testid="change-orders-filter-empty">
+        No {{ statusFilter() === 'approved' ? 'approved ' : '' }}change orders
+        to show.
+      </p>
+    }
   `,
 })
 export class CumulativeCostDeltaChartComponent {
@@ -37,11 +44,16 @@ export class CumulativeCostDeltaChartComponent {
 
   protected readonly statusFilter = signal<StatusFilter>('all');
 
-  protected readonly options = computed<Highcharts.Options>(() => {
+  protected readonly filteredChangeOrders = computed(() => {
     const filter = this.statusFilter();
-    const filtered = this.changeOrders().filter(
+    return this.changeOrders().filter(
       (changeOrder) => filter === 'all' || changeOrder.status === 'approved'
     );
+  });
+
+  protected readonly options = computed<Highcharts.Options>(() => {
+    const filter = this.statusFilter();
+    const filtered = this.filteredChangeOrders();
 
     const deltaByMonth = new Map<string, number>();
     for (const changeOrder of filtered) {

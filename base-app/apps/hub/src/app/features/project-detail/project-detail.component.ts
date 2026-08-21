@@ -93,9 +93,15 @@ import {CumulativeCostDeltaChartComponent} from "../../ui/cumulative-cost-delta-
 
       <section class="mb-6">
         <mat-card class="p-4">
-          <app-cumulative-cost-delta-chart
-            [changeOrders]="store.changeOrders()"
-          />
+Fall          @if (store.changeOrders().length > 0) {
+            <app-cumulative-cost-delta-chart
+              [changeOrders]="store.changeOrders()"
+            />
+          } @else {
+            <p class="text-gray-500" data-testid="change-orders-empty">
+              No change orders have been raised for this project.
+            </p>
+          }
         </mat-card>
       </section>
 
